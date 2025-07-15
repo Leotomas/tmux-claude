@@ -19,6 +19,16 @@
           }
         ]
       }
+    ],
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/home/leo/projets/perso/tmux-claude/scripts/claude_tmux_hooks.py pretooluse"
+          }
+        ]
+      }
     ]
   }
 }

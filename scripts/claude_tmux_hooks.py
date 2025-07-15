@@ -211,7 +211,7 @@ def handle_stop_hook():
     else:
         # Remove any existing emoji prefix to get original name
         original_name = current_name
-        for emoji in ['✅', '📢', '🔄']:
+        for emoji in ['✅', '📢', '❓', '🔄']:
             if original_name.startswith(emoji + ' '):
                 original_name = original_name[len(emoji + ' '):]
                 logger.debug(f"Removed emoji prefix, original name: {original_name}")
@@ -268,7 +268,7 @@ def handle_notification_hook():
     else:
         # Remove any existing emoji prefix to get original name
         original_name = current_name
-        for emoji in ['✅', '📢', '🔄']:
+        for emoji in ['✅', '📢', '❓', '🔄']:
             if original_name.startswith(emoji + ' '):
                 original_name = original_name[len(emoji + ' '):]
                 logger.debug(f"Removed emoji prefix, original name: {original_name}")
@@ -297,6 +297,63 @@ def handle_notification_hook():
     else:
         logger.error(f"Failed to set pane name for {pane_id}")
         logger.log_hook_execution('NOTIFICATION', pane_id, success=False)
+
+def handle_pretooluse_hook():
+    """Handle Claude PreToolUse event - add question mark emoji"""
+    logger.log_function_call('handle_pretooluse_hook')
+    logger.info("Processing Claude PreToolUse hook")
+    
+    pane_id = get_claude_pane_id()
+    if not pane_id:
+        logger.error("Could not get Claude pane ID")
+        logger.log_hook_execution('PRETOOLUSE', None, success=False)
+        return
+    
+    current_name = get_pane_name(pane_id)
+    if not current_name:
+        logger.error(f"Could not get current name for pane {pane_id}")
+        logger.log_hook_execution('PRETOOLUSE', pane_id, success=False)
+        return
+    
+    logger.debug(f"Current pane name: {current_name}")
+    
+    # Check if we already have a state saved
+    state = load_pane_state(pane_id)
+    if state:
+        original_name = state['original_name']
+        logger.debug(f"Using saved original name: {original_name}")
+    else:
+        # Remove any existing emoji prefix to get original name
+        original_name = current_name
+        for emoji in ['✅', '📢', '❓', '🔄']:
+            if original_name.startswith(emoji + ' '):
+                original_name = original_name[len(emoji + ' '):]
+                logger.debug(f"Removed emoji prefix, original name: {original_name}")
+                break
+    
+    # Set new name with question mark emoji
+    new_name = f"❓ {original_name}"
+    logger.debug(f"Setting new name: {new_name}")
+    
+    if set_pane_name(pane_id, new_name):
+        save_pane_state(pane_id, original_name, 'permission')
+        
+        # Send notification
+        session_name = get_current_tmux_session()
+        notify_message = f"{session_name}:{pane_id} - Claude needs tool permission"
+        logger.debug(f"Sending notification: {notify_message}")
+        
+        try:
+            subprocess.run(['notify_windows', notify_message], check=False)
+            logger.debug("Notification sent successfully")
+        except FileNotFoundError:
+            logger.warning("notify_windows not available")
+        
+        logger.log_hook_execution('PRETOOLUSE', pane_id, success=True)
+        logger.info(f"PreToolUse hook completed successfully for pane {pane_id}")
+    else:
+        logger.error(f"Failed to set pane name for {pane_id}")
+        logger.log_hook_execution('PRETOOLUSE', pane_id, success=False)
 
 def restore_pane_name(pane_id):
     """Restore original pane name and auto-rename setting"""
@@ -354,7 +411,7 @@ def clear_emoji_on_enter():
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: claude_tmux_hooks.py [stop|notification|restore|clear_emoji_on_enter] [pane_id]")
+        print("Usage: claude_tmux_hooks.py [stop|notification|pretooluse|restore|clear_emoji_on_enter] [pane_id]")
         sys.exit(1)
     
     action = sys.argv[1]
@@ -366,6 +423,8 @@ def main():
             handle_stop_hook()
         elif action == 'notification':
             handle_notification_hook()
+        elif action == 'pretooluse':
+            handle_pretooluse_hook()
         elif action == 'restore':
             if len(sys.argv) >= 3:
                 pane_id = sys.argv[2]

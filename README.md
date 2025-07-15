@@ -6,6 +6,7 @@ A tmux plugin that displays emoji status indicators in pane names when Claude Co
 
 - **✅ Stop Status**: Shows checkmark emoji when Claude finishes responding
 - **📢 Notification Status**: Shows notification emoji when Claude sends notifications
+- **❓ PreToolUse Status**: Shows question mark emoji when Claude needs tool permission
 - **Multi-pane Support**: Tracks multiple Claude instances across different tmux panes
 - **Smart Restoration**: Automatically restores original pane names when user switches panes or presses Enter
 - **System Notifications**: Sends notifications using `notify_windows` command
@@ -84,6 +85,16 @@ Add the following configuration to your `~/.claude/settings.json`:
           }
         ]
       }
+    ],
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/path/to/tmux-claude/scripts/claude_tmux_hooks.py pretooluse"
+          }
+        ]
+      }
     ]
   }
 }
@@ -121,6 +132,7 @@ Test emoji status in current pane:
 ```bash
 ./scripts/claude_tmux_hooks.py stop
 ./scripts/claude_tmux_hooks.py notification
+./scripts/claude_tmux_hooks.py pretooluse
 ```
 
 Restore original pane name:
@@ -147,13 +159,14 @@ View tracked panes status:
 
 ## How It Works
 
-1. **Hook Integration**: Claude Code hooks trigger the plugin when Claude stops or sends notifications.
+1. **Hook Integration**: Claude Code hooks trigger the plugin when Claude stops, sends notifications, or needs tool permission (PreToolUse).
 
 2. **Pane Detection**: The plugin identifies which tmux pane the Claude instance is running in using the `$TMUX_PANE` environment variable, ensuring the emoji appears on the correct pane even when you're working in a different pane.
 
 3. **Emoji Prefixes**: The plugin adds emoji prefixes to window names:
    - ✅ when Claude finishes (`Stop` hook)
    - 📢 when Claude sends notifications (`Notification` hook)
+   - ❓ when Claude needs tool permission (`PreToolUse` hook)
 
 4. **Activity Monitoring**: The plugin monitors pane activity and restores original names when users switch panes or press Enter.
 
