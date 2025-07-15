@@ -1,0 +1,24 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/home/leo/projets/perso/tmux-claude/scripts/claude_tmux_hooks.py stop"
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/home/leo/projets/perso/tmux-claude/scripts/claude_tmux_hooks.py notification"
+          }
+        ]
+      }
+    ]
+  }
+}
