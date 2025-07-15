@@ -9,16 +9,22 @@ A tmux plugin that displays emoji status indicators in pane names when Claude Co
 - **❓ PreToolUse Status**: Shows question mark emoji when Claude needs tool permission
 - **Multi-pane Support**: Tracks multiple Claude instances across different tmux panes
 - **Smart Restoration**: Automatically restores original pane names when user switches panes or presses Enter
-- **System Notifications**: Sends notifications using `notify_windows` command
 - **Pure Python**: No external dependencies, uses only Python 3 standard library
+
+## Requirements
+
+- **Python 3.6+** (required)
+- tmux
+- Claude Code with hooks support
 
 ## Installation
 
 ### Using TPM (Tmux Plugin Manager)
 
 1. Add the plugin to your `~/.tmux.conf`:
+
    ```bash
-   set -g @plugin 'your-username/tmux-claude'
+   set -g @plugin 'leotomas/tmux-claude'
    ```
 
 2. Press `prefix + I` to install the plugin.
@@ -26,11 +32,13 @@ A tmux plugin that displays emoji status indicators in pane names when Claude Co
 ### Manual Installation
 
 1. Clone the repository:
+
    ```bash
-   git clone https://github.com/your-username/tmux-claude.git ~/.tmux/plugins/tmux-claude
+   git clone https://github.com/leotomas/tmux-claude.git ~/.tmux/plugins/tmux-claude
    ```
 
 2. Add to your `~/.tmux.conf`:
+
    ```bash
    run-shell ~/.tmux/plugins/tmux-claude/tmux-claude.tmux
    ```
@@ -53,6 +61,7 @@ set-option -g automatic-rename-format ''
 ```
 
 This ensures that:
+
 - Your custom window names are preserved when emoji prefixes are added
 - The plugin doesn't conflict with tmux's automatic renaming
 - Window names remain stable across different commands and processes
@@ -124,11 +133,13 @@ Use the provided `example-claude-settings.json` as a template and adjust the pat
 ### Manual Testing
 
 Test the notification system:
+
 ```bash
 ./scripts/notification_handler.py test
 ```
 
 Test emoji status in current pane:
+
 ```bash
 ./scripts/claude_tmux_hooks.py stop
 ./scripts/claude_tmux_hooks.py notification
@@ -136,6 +147,7 @@ Test emoji status in current pane:
 ```
 
 Restore original pane name:
+
 ```bash
 ./scripts/claude_tmux_hooks.py restore
 ```
@@ -143,16 +155,19 @@ Restore original pane name:
 ### Debugging
 
 List all tmux panes:
+
 ```bash
 ./scripts/tmux_integration.py list-panes
 ```
 
 Find panes running Claude:
+
 ```bash
 ./scripts/tmux_integration.py find-claude
 ```
 
 View tracked panes status:
+
 ```bash
 ./scripts/pane_tracker.py status
 ```
@@ -164,6 +179,7 @@ View tracked panes status:
 2. **Pane Detection**: The plugin identifies which tmux pane the Claude instance is running in using the `$TMUX_PANE` environment variable, ensuring the emoji appears on the correct pane even when you're working in a different pane.
 
 3. **Emoji Prefixes**: The plugin adds emoji prefixes to window names:
+
    - ✅ when Claude finishes (`Stop` hook)
    - 📢 when Claude sends notifications (`Notification` hook)
    - ❓ when Claude needs tool permission (`PreToolUse` hook)
@@ -187,13 +203,6 @@ tmux-claude/
 ├── example-claude-settings.json  # Example Claude configuration
 └── README.md                     # This file
 ```
-
-## Requirements
-
-- **Python 3.6+** (required)
-- tmux
-- Claude Code with hooks support
-- `notify_windows` command (optional, for notifications)
 
 ## Debug Logging
 
@@ -241,6 +250,7 @@ export TMUX_CLAUDE_DEBUG=1
 ### Log File Locations
 
 Debug logs are stored in `scripts/.logs/`:
+
 - `claude_tmux_hooks.log` - Hook execution logs
 - `tmux_integration.log` - Tmux command logs
 - `pane_tracker.log` - Pane tracking and monitoring logs
@@ -250,35 +260,41 @@ Debug logs are stored in `scripts/.logs/`:
 ## Troubleshooting
 
 ### Plugin not loading
+
 - Ensure the plugin files are executable
 - Check tmux configuration syntax
 - Verify Python 3 is available
 - **Debug**: Enable logging and check `tmux_claude.log`
 
 ### Window names not preserved
+
 - Disable automatic renaming in `~/.tmux.conf` (see Configuration section)
 - Check if you have custom window names set with `tmux rename-window`
 - **Debug**: Check logs for "auto_rename_was_on" entries
 
 ### Hooks not working
+
 - Verify the paths in `~/.claude/settings.json` are correct
 - Check that Claude Code supports hooks
 - Test the hook scripts manually
 - **Debug**: Enable logging and run `./scripts/claude_tmux_hooks.py stop` manually
 
 ### Notifications not working
+
 - Test notification system: `./scripts/notification_handler.py test`
 - Ensure `notify_windows` command is available
 - Check system notification settings
 - **Debug**: Check `notification_handler.log` for error messages
 
 ### Emoji not showing
+
 - Verify terminal supports Unicode
 - Check tmux pane name display settings
 - Test manually: `./scripts/claude_tmux_hooks.py stop`
 - **Debug**: Check `claude_tmux_hooks.log` for pane name setting errors
 
 ### Emoji appears on wrong pane
+
 - The plugin uses `$TMUX_PANE` environment variable to detect the correct pane
 - If testing manually, ensure you're in the correct pane context
 - **Debug**: Check logs for "Got pane ID from TMUX_PANE" entries
@@ -306,10 +322,13 @@ echo "Current pane: $(tmux display-message -p '#{pane_id}'), TMUX_PANE: $TMUX_PA
 ./scripts/debug_logger.py view claude_tmux_hooks | grep TMUX_PANE
 ```
 
-## License
+## License GNU GPL v3
+
+See licence.txt
 
 [Add your license here]
 
 ## Contributing
 
 [Add contribution guidelines here]
+

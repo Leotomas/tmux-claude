@@ -286,10 +286,77 @@ def handle_notification_hook():
         logger.error(f"Failed to set pane name for {pane_id}")
         logger.log_hook_execution('NOTIFICATION', pane_id, success=False)
 
+def is_waiting_for_permission():
+    """
+    Determine if Claude is waiting for user permission by analyzing the hook payload.
+    
+    This function attempts to detect if Claude is in a permission-waiting state
+    by examining various indicators in the environment and system state.
+    """
+    logger.log_function_call('is_waiting_for_permission')
+    
+    try:
+        # Try to read JSON payload from stdin (if available)
+        import select
+        import sys
+        
+        # Check if there's input available on stdin
+        if select.select([sys.stdin], [], [], 0.1)[0]:
+            try:
+                payload_data = sys.stdin.read()
+                if payload_data:
+                    payload = json.loads(payload_data)
+                    logger.debug(f"Received hook payload: {payload}")
+                    
+                    # Log the tool being called for debugging
+                    tool_name = payload.get('tool_name', 'unknown')
+                    logger.debug(f"Tool being called: {tool_name}")
+                    
+                    # For now, we'll use a heuristic approach
+                    # Claude typically waits for permission on potentially dangerous tools
+                    # or when the user has not granted blanket permission
+                    
+                    # Check if this is a tool that typically requires permission
+                    permission_required_tools = ['Bash', 'Write', 'Edit', 'MultiEdit']
+                    if tool_name in permission_required_tools:
+                        logger.debug(f"Tool {tool_name} typically requires permission")
+                        return True
+                    
+                    # Additional heuristics could be added here based on:
+                    # - Tool parameters (e.g., dangerous commands in Bash)
+                    # - Session state
+                    # - User preferences
+                    
+                    return False
+                    
+            except (json.JSONDecodeError, Exception) as e:
+                logger.debug(f"Could not parse hook payload: {e}")
+                
+        # Fallback: use environment variables or other indicators
+        # Check if we're in a permission-waiting state by looking for specific env vars
+        # or checking recent tool execution patterns
+        
+        # For now, we'll be conservative and assume permission is needed
+        # This can be refined based on actual usage patterns
+        logger.debug("No payload available, using fallback heuristics")
+        return True
+        
+    except Exception as e:
+        logger.error(f"Error in permission detection: {e}")
+        return False
+
 def handle_pretooluse_hook():
-    """Handle Claude PreToolUse event - add question mark emoji"""
+    """Handle Claude PreToolUse event - add question mark emoji only when waiting for permission"""
     logger.log_function_call('handle_pretooluse_hook')
     logger.info("Processing Claude PreToolUse hook")
+    
+    # First, determine if Claude is actually waiting for permission
+    if not is_waiting_for_permission():
+        logger.debug("Claude is not waiting for permission, skipping emoji display")
+        logger.log_hook_execution('PRETOOLUSE', None, success=True)
+        return
+    
+    logger.info("Claude is waiting for permission, showing question mark emoji")
     
     pane_id = get_claude_pane_id()
     if not pane_id:
