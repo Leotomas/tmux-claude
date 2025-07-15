@@ -229,12 +229,6 @@ def handle_stop_hook():
         notify_message = f"{session_name}:{pane_id} - Claude finished"
         logger.debug(f"Sending notification: {notify_message}")
         
-        try:
-            subprocess.run(['notify_windows', notify_message], check=False)
-            logger.debug("Notification sent successfully")
-        except FileNotFoundError:
-            logger.warning("notify_windows not available")
-        
         logger.log_hook_execution('STOP', pane_id, success=True)
         logger.info(f"Stop hook completed successfully for pane {pane_id}")
     else:
@@ -286,12 +280,6 @@ def handle_notification_hook():
         notify_message = f"{session_name}:{pane_id} - Claude notification"
         logger.debug(f"Sending notification: {notify_message}")
         
-        try:
-            subprocess.run(['notify_windows', notify_message], check=False)
-            logger.debug("Notification sent successfully")
-        except FileNotFoundError:
-            logger.warning("notify_windows not available")
-        
         logger.log_hook_execution('NOTIFICATION', pane_id, success=True)
         logger.info(f"Notification hook completed successfully for pane {pane_id}")
     else:
@@ -342,12 +330,6 @@ def handle_pretooluse_hook():
         session_name = get_current_tmux_session()
         notify_message = f"{session_name}:{pane_id} - Claude needs tool permission"
         logger.debug(f"Sending notification: {notify_message}")
-        
-        try:
-            subprocess.run(['notify_windows', notify_message], check=False)
-            logger.debug("Notification sent successfully")
-        except FileNotFoundError:
-            logger.warning("notify_windows not available")
         
         logger.log_hook_execution('PRETOOLUSE', pane_id, success=True)
         logger.info(f"PreToolUse hook completed successfully for pane {pane_id}")

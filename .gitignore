@@ -61,3 +61,6 @@ scripts/.debug_config.json
 # User-specific configuration
 .claude_settings.json
 my-claude-settings.json
+.git/
+.claude/
+cache.zsh

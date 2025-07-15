@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/home/leo/projets/perso/tmux-claude/scripts/claude_tmux_hooks.py stop"
+            "command": "~/.tmux/plugins/tmux-claude/scripts/claude_tmux_hooks.py stop"
           }
         ]
       }
@@ -15,7 +15,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/home/leo/projets/perso/tmux-claude/scripts/claude_tmux_hooks.py notification"
+            "command": "~/.tmux/plugins/tmux-claude/scripts/claude_tmux_hooks.py notification"
           }
         ]
       }
@@ -25,10 +25,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/home/leo/projets/perso/tmux-claude/scripts/claude_tmux_hooks.py pretooluse"
+            "command": "~/.tmux/plugins/tmux-claude/scripts/claude_tmux_hooks.py pretooluse"
           }
         ]
       }
     ]
   }
 }
+
