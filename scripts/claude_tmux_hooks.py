@@ -331,9 +331,30 @@ def restore_pane_name(pane_id):
         logger.warning(f"No state found for pane {pane_id} to restore")
         return False
 
+def clear_emoji_on_enter():
+    """Clear emoji prefix from current pane when Enter is pressed"""
+    logger.log_function_call('clear_emoji_on_enter')
+    
+    # Get current pane ID
+    pane_id = get_current_tmux_pane()
+    if not pane_id:
+        logger.debug("Could not get current pane ID for Enter key clear")
+        return
+    
+    # Check if this pane has an emoji prefix (saved state exists)
+    state = load_pane_state(pane_id)
+    if state:
+        logger.debug(f"Found emoji state for pane {pane_id}, clearing emoji prefix")
+        restore_pane_name(pane_id)
+    else:
+        logger.debug(f"No emoji state found for pane {pane_id}, no action needed")
+    
+    # This function is designed to be lightweight and fast
+    # to avoid introducing input lag when Enter is pressed
+
 def main():
     if len(sys.argv) < 2:
-        print("Usage: claude_tmux_hooks.py [stop|notification|restore] [pane_id]")
+        print("Usage: claude_tmux_hooks.py [stop|notification|restore|clear_emoji_on_enter] [pane_id]")
         sys.exit(1)
     
     action = sys.argv[1]
@@ -355,6 +376,8 @@ def main():
                     restore_pane_name(pane_id)
                 else:
                     logger.error("Could not get Claude pane ID for restore")
+        elif action == 'clear_emoji_on_enter':
+            clear_emoji_on_enter()
         else:
             logger.error(f"Unknown action: {action}")
             print(f"Unknown action: {action}")

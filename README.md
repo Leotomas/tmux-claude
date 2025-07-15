@@ -7,7 +7,7 @@ A tmux plugin that displays emoji status indicators in pane names when Claude Co
 - **✅ Stop Status**: Shows checkmark emoji when Claude finishes responding
 - **📢 Notification Status**: Shows notification emoji when Claude sends notifications
 - **Multi-pane Support**: Tracks multiple Claude instances across different tmux panes
-- **Smart Restoration**: Automatically restores original pane names when user types
+- **Smart Restoration**: Automatically restores original pane names when user switches panes or presses Enter
 - **System Notifications**: Sends notifications using `notify_windows` command
 - **Pure Python**: No external dependencies, uses only Python 3 standard library
 
@@ -101,7 +101,7 @@ Use the provided `example-claude-settings.json` as a template and adjust the pat
 
 2. **Automatic status updates**: The plugin automatically detects when Claude finishes or sends notifications and updates the pane names with appropriate emojis.
 
-3. **Restore original names**: When you type anything in a pane, the original pane name is automatically restored.
+3. **Restore original names**: When you switch to a pane or press Enter, the original pane name is automatically restored.
 
 4. **View status**: Check the status of all tracked panes:
    ```bash
@@ -155,7 +155,7 @@ View tracked panes status:
    - ✅ when Claude finishes (`Stop` hook)
    - 📢 when Claude sends notifications (`Notification` hook)
 
-4. **Activity Monitoring**: The plugin monitors pane activity and restores original names when users type.
+4. **Activity Monitoring**: The plugin monitors pane activity and restores original names when users switch panes or press Enter.
 
 5. **State Management**: Pane states are stored in temporary JSON files and cleaned up automatically.
 
@@ -177,7 +177,7 @@ tmux-claude/
 
 ## Requirements
 
-- Python 3.6+
+- **Python 3.6+** (required)
 - tmux
 - Claude Code with hooks support
 - `notify_windows` command (optional, for notifications)
